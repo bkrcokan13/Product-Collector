@@ -5,6 +5,7 @@ import json
 
 def getStoreProduct():
     try:
+        # Product List
         productsNames = []
         productPrices = []
 
@@ -33,7 +34,6 @@ def getStoreProduct():
         # Check list length
         if len(productsNames) and len(productPrices) == 0:
             print("Warring, products list is empty !!")
-            pass
         else:
             # Zip two list and create dict
             productDict = dict(zip(productsNames, productPrices))
