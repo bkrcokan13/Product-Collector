@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-
+# Test
 def collectComputer():
     
     productNames = []
@@ -26,16 +26,9 @@ def collectComputer():
     for data in productsList:
         bsContent = BeautifulSoup(str(data), 'html.parser')
         
-       
-
-       
         for productUrl in bsContent.find_all("a", attrs={'class':'a-size-base a-link-normal s-no-hover s-underline-text s-underline-link-text s-link-style a-text-normal'}):
             print(f"Product Name : 'https://www.amazon.com{productUrl.get('href')}\n\t")
             # productNames.append(productName.href)
         
-      
-    
-  
-
-
+          
 collectComputer()
