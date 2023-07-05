@@ -43,7 +43,12 @@ class Amazon:
                     print(("https://www.amazon.com.tr" + product.get('href')))
                     self.productUrlList.append(("https://www.amazon.com.tr" + product.get('href')))
 
-                print(f"Product List Added's")
+                productListCount = 0
+
+                for a in self.productUrlList:
+                    productListCount +=1
+
+                print(f"Product item's :{productListCount}")
 
 
             else:
