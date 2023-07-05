@@ -29,6 +29,46 @@ def collectComputer():
         for productUrl in bsContent.find_all("a", attrs={'class':'a-size-base a-link-normal s-no-hover s-underline-text s-underline-link-text s-link-style a-text-normal'}):
             print(f"Product Name : 'https://www.amazon.com{productUrl.get('href')}\n\t")
             # productNames.append(productName.href)
-        
-          
-collectComputer()
+
+
+
+
+def ProductName(data):
+    bs = BeautifulSoup(data, 'html.parser')
+    pName = bs.find('span', attrs={'class':'a-size-large product-title-word-break'}).getText().strip()
+
+    return pName
+
+def ProductPrice(data):
+    bs = BeautifulSoup(data, 'html.parser')
+    pPrice = bs.find('span', attrs={'class': 'a-price-whole'}).getText().strip().replace(',', " TL")
+    return pPrice
+
+def ProductRating(data):
+    bs = BeautifulSoup(data, 'html.parser')
+    pRating = bs.find('span', attrs={'class': 'a-icon-alt'}).getText().strip()
+    return pRating.replace('yıldız üzerinden', "-").strip()
+def TestOne():
+    HEADERS = {
+        'User-Agent': ('Mozilla/5.0 (X11; Linux x86_64)'
+                       'AppleWebKit/537.36 (KHTML, like Gecko)'
+                       'Chrome/44.0.2403.157 Safari/537.36'),
+        'Accept-Language': 'en-US, en;q=0.5'
+    }
+    getPage = requests.get("https://www.amazon.com.tr/Samsung-SM-A525F-Galaxy-Ak%C4%B1ll%C4%B1-Telefon/dp/B093QC5HGK/ref=sr_1_203?keywords=iPhone%2B11&qid=1688593223&sr=8-203&th=1", headers=HEADERS)
+
+    if getPage.status_code == 200:
+        print("Request OK !")
+
+        pName = ProductName(getPage.content)
+        pPrice = ProductPrice(getPage.content)
+        pRating = ProductRating(getPage.content)
+
+        print("----------------------------------------------------------------------------------------------------------------------------")
+        print(f"Product Name :{pName}\n\bProduct Price: {pPrice}\n\bProduct Rating :{pRating}")
+        print("----------------------------------------------------------------------------------------------------------------------------")
+
+
+
+
+TestOne()
