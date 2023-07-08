@@ -27,11 +27,11 @@ class Amazon:
     def GetProductPrice(self):
 
         getPrice = self.productBs.find('span',
-                                       attrs={'class': 'a-price-whole'}).getText().strip().replace(',', " TL")
+                                       attrs={'class': 'a-price-whole'}).getText().strip().replace(",", "")
         if getPrice is None or "":
             return ""
         else:
-            return getPrice
+            return "TL " + getPrice
 
     def GetProductRating(self):
         getRating = self.productBs.find('span',
@@ -67,26 +67,53 @@ class Amazon:
                         productData = requests.get(datas, headers=self.HEADERS)
 
                         if productData.status_code == 200:
-                            self.productBs = BeautifulSoup(productData.content, 'html.parser')
-                            pName = self.GetProductName()
-                            pPrice = self.GetProductPrice()
-                            pRating = self.GetProductRating()
-                            pUrl = datas
+                            try:
+                                self.productBs = BeautifulSoup(productData.content, 'html.parser')
+                                pName = self.GetProductName()
+                                pPrice = self.GetProductPrice()
 
-                            print(
-                                f"Product Name :{pName}\nProduct Price : {pPrice}\n Product Rating: {pRating}\n Product Url : {pUrl}\n")
+                                pRating = self.GetProductRating()
+                                pUrl = datas
+
+                                print(
+                                    f"Product Name :{pName}\nProduct Price : {pPrice}\n Product Rating: {pRating}\n Product Url : {pUrl}\n")
+                            except Exception as exp:
+                                pass
+
+
                         else:
                             print("Error, product page is not available or reachable, check Headers !")
                             break
             else:
+                print(reqData.status_code)
                 print("Error data is not requested, check headers")
         except requests.exceptions.RequestException as reqExp:
             print("Error, request is failed !\n")
             print(reqExp.response)
 
     def UIMenu(self):
-        pass
+        while True:
+            try:
+                headerBanner = """
+                         _                                      ____      _ _           _             
+                        / \   _ __ ___   __ _ _______  _ __    / ___|___ | | | ___  ___| |_ ___  _ __ 
+                       / _ \ | '_ ` _ \ / _` |_  / _ \| '_ \  | |   / _ \| | |/ _ \/ __| __/ _ \| '__|
+                      / ___ \| | | | | | (_| |/ / (_) | | | | | |__| (_) | | |  __/ (__| || (_) | |   
+                     /_/   \_\_| |_| |_|\__,_/___\___/|_| |_|  \____\___/|_|_|\___|\___|\__\___/|_|   """
+
+                print(headerBanner)
+
+                cmds = str(input(">>"))
+
+                if cmds is None:
+                    pass
+                else:
+                    print("Colector starting .... !")
+                    self.SearchProduct(productName=cmds)
+            except:
+                print("Error, wrong command !")
+                break
 
 
 app = Amazon()
-app.SearchProduct("iPhone 11")
+app.UIMenu()
