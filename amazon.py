@@ -39,7 +39,7 @@ class Amazon:
         if getPrice is None or "":
             return ""
         else:
-            return getPrice + "TL "
+            return getPrice + " TL"
            
     # Get Product Rating Rate
     def GetProductRating(self):
@@ -72,7 +72,8 @@ class Amazon:
                 for product in getProductUrl:
                     self.productUrlList.append(("https://www.amazon.com.tr" + product.get('href')))
 
-                print(f"Info : {len(self.productUrlList)} Products founded ")
+                # TODO: Fix url counter, 47 product found but showed 60 ! This is a problem dude ! :) 
+                print(f"Info : {len(self.productUrlList)} Products Founded ")
                 print(f"Warning: Items will be collected 1.5 second delays!")
                 print("\n")
 
@@ -80,6 +81,7 @@ class Amazon:
                 if len(self.productUrlList) != 0:
 
                     productCount = 0
+
                     for datas in self.productUrlList:
                         productData = requests.get(datas, headers=self.HEADERS)
                         time.sleep(1.5)
@@ -95,9 +97,12 @@ class Amazon:
                                 productCount +=1
 
                                 print(
-                                    f"{productCount}-Product Name :{pName}\nProduct Price : {pPrice}\n Product Rating: {pRating}\n Product Url : {pUrl}\n")
+                                    f"{productCount}-Product Name :{pName}\n\tProduct Price : {pPrice}\n\tProduct Rating: {pRating}\n\tProduct Url :{pUrl}\n")
                             except Exception as exp:
-                                pass
+
+                                # Catch error and fix !
+                                print("Error, product info not getting : " + datas)
+                                break
 
 
                         else:
