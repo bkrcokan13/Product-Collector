@@ -49,22 +49,26 @@ class Amazon:
 
             if reqData.status_code == 200:
 
-                # Clear prev data
-                self.data = None
-
                 bs = BeautifulSoup(reqData.content, 'html.parser')
 
                 getProductUrl = bs.find_all('a', attrs={
                     'class': 'a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'})
 
+                # Clear list for new search
+                self.productUrlList.clear()
                 for product in getProductUrl:
                     self.productUrlList.append(("https://www.amazon.com.tr" + product.get('href')))
 
-                print("Info : Product urls collected !")
+                print(f"Info : {len(self.productUrlList)} Products founded ")
+                print(f"Warning: Items will be collected 1.5 second delays!")
+                print("\n")
 
                 if len(self.productUrlList) != 0:
+
+                    productCount = 0
                     for datas in self.productUrlList:
                         productData = requests.get(datas, headers=self.HEADERS)
+                        time.sleep(1.5)
 
                         if productData.status_code == 200:
                             try:
@@ -74,9 +78,10 @@ class Amazon:
 
                                 pRating = self.GetProductRating()
                                 pUrl = datas
+                                productCount +=1
 
                                 print(
-                                    f"Product Name :{pName}\nProduct Price : {pPrice}\n Product Rating: {pRating}\n Product Url : {pUrl}\n")
+                                    f"{productCount}-Product Name :{pName}\nProduct Price : {pPrice}\n Product Rating: {pRating}\n Product Url : {pUrl}\n")
                             except Exception as exp:
                                 pass
 
