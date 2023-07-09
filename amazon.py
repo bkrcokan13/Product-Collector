@@ -4,6 +4,9 @@ import time
 
 
 class Amazon:
+
+
+    # TODO: 1-Add More Country ,2-Add Curency Converter, 3-Add Extractor(JSON, CSV) 4-Improve UI and create more funcable menu
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (X11; Linux x86_64)'
                        'AppleWebKit/537.36 (KHTML, like Gecko)'
@@ -11,10 +14,14 @@ class Amazon:
         'Accept-Language': 'en-US, en;q=0.5'
     }
     data = None
+
+    #Collected Product List
     productUrlList = []
 
+    #Transfer BS Method and Create Object
     productBs = None
 
+    # Get Product Name
     def GetProductName(self):
 
         getName = self.productBs.find('span',
@@ -24,6 +31,7 @@ class Amazon:
         else:
             return getName
 
+    # Get Product Price
     def GetProductPrice(self):
 
         getPrice = self.productBs.find('span',
@@ -31,8 +39,9 @@ class Amazon:
         if getPrice is None or "":
             return ""
         else:
-            return "TL " + getPrice
-
+            return getPrice + "TL "
+           
+    # Get Product Rating Rate
     def GetProductRating(self):
         getRating = self.productBs.find('span',
                                         attrs={'class': 'a-icon-alt'}).getText().strip()
@@ -42,11 +51,15 @@ class Amazon:
             return getRating
 
     def SearchProduct(self, productName):
+
+        # Only country TR
         searchUrl = "https://www.amazon.com.tr/s?k="
 
         try:
+            # Collect all url's 
             reqData = requests.get((searchUrl + productName), headers=self.HEADERS)
 
+            # Check website return code
             if reqData.status_code == 200:
 
                 bs = BeautifulSoup(reqData.content, 'html.parser')
@@ -63,6 +76,7 @@ class Amazon:
                 print(f"Warning: Items will be collected 1.5 second delays!")
                 print("\n")
 
+                # Check list status
                 if len(self.productUrlList) != 0:
 
                     productCount = 0
@@ -119,6 +133,6 @@ class Amazon:
                 print("Error, wrong command !")
                 break
 
-
+# Initalize..
 app = Amazon()
 app.UIMenu()
