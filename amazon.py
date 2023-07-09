@@ -5,7 +5,6 @@ import time
 
 class Amazon:
 
-
     # TODO: 1-Add More Country ,2-Add Curency Converter, 3-Add Extractor(JSON, CSV) 4-Improve UI and create more funcable menu
     HEADERS = {
         'User-Agent': ('Mozilla/5.0 (X11; Linux x86_64)'
