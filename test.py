@@ -46,4 +46,20 @@ def getStoreProduct():
         print("Error, products data not fetched !")
 
 
-getStoreProduct()
+def CountryCodes():
+    apiUrl = "https://v6.exchangerate-api.com/v6/d654e61f7e5398a2d6ae3a9a/latest/TRY"
+    getCountry = requests.get(apiUrl)
+
+    data = getCountry.json()
+
+    rates = dict(data['conversion_rates'])
+
+    for value in rates.keys():
+        if value != "TRY":
+            print(f"{value}:{round(rates[value] * 7500, 3)}\n")
+
+    
+    
+   
+
+CountryCodes()

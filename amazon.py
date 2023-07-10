@@ -12,7 +12,17 @@ class Amazon:
                        'Chrome/44.0.2403.157 Safari/537.36'),
         'Accept-Language': 'en-US, en;q=0.5'
     }
+
+    # Testing only 4 country
+    CountryUrls = {
+        'us':'https://www.amazon.com/s?k=',
+        'nl':'https://www.amazon.nl/s?k=',
+        'de':'https://www.amazon.de/s?k=',
+        'ae':'https://www.amazon.ae/s?k='
+    }
     data = None
+
+
 
     #Collected Product List
     productUrlList = []
@@ -48,6 +58,11 @@ class Amazon:
             return ""
         else:
             return getRating
+    
+
+    def GetCurrencyRate(self, productPrice, country):
+        pass
+
 
     def SearchProduct(self, productName):
 
@@ -137,6 +152,6 @@ class Amazon:
                 print("Error, wrong command !")
                 break
 
-# Initalize..
+# Initalize app 
 app = Amazon()
 app.UIMenu()
