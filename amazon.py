@@ -16,11 +16,11 @@ class Amazon:
 
     # Testing only 4 country
     CountryUrls = {
-        'us': 'https://www.amazon.com/s?k=',
-        'nl': 'https://www.amazon.nl/s?k=',
-        'de': 'https://www.amazon.de/s?k=',
-        'ae': 'https://www.amazon.ae/s?k=',
-        'tr': 'https://www.amazon.com.tr/s?k='
+        'US': 'https://www.amazon.com/s?k=',
+        'NL': 'https://www.amazon.nl/s?k=',
+        'DE': 'https://www.amazon.de/s?k=',
+        'UAE': 'https://www.amazon.ae/s?k=',
+        'TR': 'https://www.amazon.com.tr/s?k='
     }
     data = None
 
@@ -31,6 +31,9 @@ class Amazon:
     productBs = None
     selectedCountry = None
     currencyRates = None
+
+    #Selected Currenct Values
+    selectedCountryCurrency = {}
 
     def __init__(self):
         self.GetCurrencyRate()
@@ -59,8 +62,11 @@ class Amazon:
         # API Url
         baseApi = "https://v6.exchangerate-api.com/v6/d654e61f7e5398a2d6ae3a9a/latest/"
 
+        # API Empty !
         currencyAPI = ""
 
+
+        
         print("---------------Available Country List-----------------")
 
         # List Available County
@@ -109,10 +115,32 @@ class Amazon:
             # Extract rates
             self.currencyRates = dict(getCurrency.json()['conversion_rates'])
 
+            if self.selectedCountry == "NL" or self.selectedCountry == "DE":
+                self.selectedCountryCurrency["USD"] = self.currencyRates["USD"]
+                self.selectedCountryCurrency["TRY"] = self.currencyRates["TRY"]
+                self.selectedCountryCurrency["AED"] = self.currencyRates["AED"]
+            
+            elif self.selectedCountry == "US":
+                self.selectedCountryCurrency["EUR"] = self.currencyRates["EUR"]
+                self.selectedCountryCurrency["TRY"] = self.currencyRates["TRY"]
+                self.selectedCountryCurrency["AED"] = self.currencyRates["AED"]
+            
+            elif self.selectedCountry == "UAE":
+                self.selectedCountryCurrency["EUR"] = self.currencyRates["EUR"] 
+                self.selectedCountryCurrency["TRY"] = self.currencyRates["TRY"]
+                self.selectedCountryCurrency["USD"] = self.currencyRates["USD"]
+            
+            elif self.selectedCountry == "TR":
+                self.selectedCountryCurrency["USD"] = self.currencyRates["USD"]
+                self.selectedCountryCurrency["EUR"] = self.currencyRates["EUR"]
+                self.selectedCountryCurrency["AED"] = self.currencyRates["AED"]
+
+
+
             nowTime = datetime.now()
             print(f"Info: Currency rates fetched.{nowTime.strftime('%H:%M:%S')}")
 
-            print(self.currencyRates.keys())
+
         elif getCurrency.status_code == 404:
             print("Error: Country not found !")
 
@@ -131,13 +159,50 @@ class Amazon:
 
     # Get Product Price
     def GetProductPrice(self):
+        
+       
+       
+
+      
 
         getPrice = self.productBs.find('span',
                                        attrs={'class': 'a-price-whole'}).getText().strip().replace(",", "")
         if getPrice is None or "":
             return ""
         else:
-            return getPrice + " TL"
+            
+            if self.selectedCountry == "DE" or "NL":
+                return f"""
+                    {getPrice}EUR\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["USD"]))}USD\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["TRY"]))}TRY\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["AED"]))}AED\n\t
+                """
+            elif self.selectedCountry == "US":
+                return f"""
+                    {getPrice}USD\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["EUR"]))}EUR\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["TRY"]))}TRY\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["AED"]))}AED\n\t
+                """
+            elif self.selectedCountry == "TRY":
+                return f"""
+                    {getPrice} TRY\n\t
+                    {str(round((int(getPrice) * self.selectedCountryCurrency["USD"]),2))} USD\n\t
+                    {str(round((int(getPrice) * self.selectedCountryCurrency["EUR"]),2))} EUR\n\t
+                    {str(round((int(getPrice) * self.selectedCountryCurrency["AED"]),2))} AED\n\t
+                """
+            elif self.selectedCountry == "UAE":
+                return f"""
+                    {getPrice} AED\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["TRY"]))} TRY\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["EUR"]))} EUR\n\t
+                    {str((int(getPrice) * self.selectedCountryCurrency["USD"]))} USD\n\t
+                """
+
+
+
+                
 
     # Get Product Rating Rate
     def GetProductRating(self):
@@ -150,10 +215,12 @@ class Amazon:
 
     def SearchProduct(self, productName):
 
-        # Only country TR
-        searchUrl = "https://www.amazon.com.tr/s?k="
-
+        # # Only country TR
+        # searchUrl = "https://www.amazon.com.tr/s?k="
+        
         try:
+            searchUrl = self.CountryUrls[self.selectedCountry]
+
             # Collect all url's
             reqData = requests.get(
                 (searchUrl + productName), headers=self.HEADERS)
@@ -168,9 +235,11 @@ class Amazon:
 
                 # Clear list for new search
                 self.productUrlList.clear()
+
+                splitUrl = self.CountryUrls[self.selectedCountry].split('/')
                 for product in getProductUrl:
                     self.productUrlList.append(
-                        ("https://www.amazon.com.tr" + product.get('href')))
+                        (f"https://{splitUrl[2]}" + product.get('href')))
 
                 # TODO: Fix url counter, 47 product found but showed 60 ! This is a problem dude ! :)
                 print(f"Info : {len(self.productUrlList)} Products Founded ")
@@ -198,7 +267,7 @@ class Amazon:
                                 productCount += 1
 
                                 print(
-                                    f"{productCount}-Product Name :{pName}\n\tProduct Price : {pPrice}\n\tProduct Rating: {pRating}\n\tProduct Url :{pUrl}\n")
+                                    f"{productCount}-Product Name :{pName}\n\tProduct Price : {pPrice}\nProduct Rating: {pRating}\nProduct Url :{pUrl}\n")
                             except Exception as exp:
 
                                 # Catch error and fix !
