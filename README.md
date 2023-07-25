@@ -7,7 +7,7 @@ Netherlands, Germany, America, Turkey, United Arab Emirates are active. The proj
 
 ## Interface
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](main.png)
 
 
 ## Roadmap
